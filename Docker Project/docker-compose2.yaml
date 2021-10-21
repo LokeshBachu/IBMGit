@@ -4,7 +4,7 @@ services:
   web:
     # Pull the Image from Repository.
     # replace username/repo:tag with your name and image details
-    image: anshuldevops/frindly_hello:latest 
+    image: anshuldevops/frindly_hello:latest
     # Command used to deploy the Service
     deploy:
       # Run 5 instances of that image as a service called web
@@ -14,13 +14,13 @@ services:
         limits:
           cpus: "0.1"
           memory: 50M
-      # Immediately restart containers if one fails.     
+      # Immediately restart containers if one fails.
       restart_policy:
         condition: on-failure
-    # Map port 4000 on the host to web’s port 80.    
+    # Map port 4000 on the host to web’s port 80.
     ports:
       - "4000:80"
-    # Define default network  
+    # Define default network
     networks:
       - webnet
 
@@ -36,7 +36,7 @@ services:
     networks:
       - webnet
 
-    redis:
+  redis:
     image: redis
     ports:
       - "6379:6379"
