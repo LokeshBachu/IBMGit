@@ -1,0 +1,133 @@
+K8 installation:
+
+1.Add the entry in hosts with ip and hostname
+vi /etc/hosts
+add ip and hosts here with space seperated.
+
+2.We have install docker and check version
+
+sudo apt update
+sudo apt install -y docker.io
+sudo systemctl enable docker.service --now
+docker --version
+
+3.Disable swap and Enable IP Forwading on all nodes.
+
+sudo vi /etc/fstab
+sudo swapoff -a
+sudo vi /etc/sysctl.conf
+and look for line “net.ipv4.ip_forward=1” and un-comment it
+
+sudo sysctl -p
+net.ipv4.ip_forward = 1
+
+4.Install Kubectl, kubelet and kubeadm on all nodes
+
+sudo apt install -y apt-transport-https curl
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+sudo apt update
+sudo apt install -y kubelet kubeadm kubectl
+
+when the kubernetes repository is available for Ubuntu 20.04 then replace xenial with focal word in above ‘apt-add-repository’ command.
+
+5.Initialize Kubernetes Cluster using kubeadm (from master node)
+
+sudo kubeadm init
+
+If you get error :
+ This error is likely caused by:
+                - The kubelet is not running
+                - The kubelet is unhealthy due to a misconfiguration of the node in some way (required cgroups disabled)
+
+Please enable cgroups
+
+sed -i "s/cgroupDriver: systemd/cgroupDriver: cgroupfs/g" /var/lib/kubelet/config.yaml
+systemctl daemon-reload
+systemctl restart kubelet
+kubeadm init --ignore-preflight-errors all
+=============================================================================================================================
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 157.230.82.111:6443 --token 7992c0.nwcf2fl6apzj65y1 \
+        --discovery-token-ca-cert-hash sha256:86a55d4ed742035a340af9b782a32963099365c95965f9110983de515a440ba7
+
+6.We have to use commands rendered at above output.
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+7.Check the nodes.
+
+kubectl get nodes
+
+root@k8-master:~# kubectl get nodes
+NAME          STATUS     ROLES                  AGE    VERSION
+k8-master     NotReady   control-plane,master   17m    v1.22.2
+k8-worker-2   NotReady   <none>                 8m5s   v1.22.2
+
+
+================================================================================================================================
+
+Node Configuration:
+
+1.Add the entry in hosts with ip and hostname
+vi /etc/hosts
+add ip and hosts here with space seperated.
+
+2.We have install docker and check version
+
+sudo apt update
+sudo apt install -y docker.io
+sudo systemctl enable docker.service --now
+docker --version
+
+3.Disable swap and Enable IP Forwading on all nodes.
+
+sudo vi /etc/fstab
+sudo swapoff -a
+sudo vi /etc/sysctl.conf
+and look for line “net.ipv4.ip_forward=1” and un-comment it
+
+sudo sysctl -p
+net.ipv4.ip_forward = 1
+
+4.Install Kubectl, kubelet and kubeadm on all nodes
+
+sudo apt install -y apt-transport-https curl
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+sudo apt update
+sudo apt install -y kubelet kubeadm kubectl
+
+when the kubernetes repository is available for Ubuntu 20.04 then replace xenial with focal word in above ‘apt-add-repository’ command
+
+5.Get the Generated value from master when we run init command.
+
+kubeadm join 157.230.82.111:6443 --token 7992c0.nwcf2fl6apzj65y1 \
+        --discovery-token-ca-cert-hash sha256:86a55d4ed742035a340af9b782a32963099365c95965f9110983de515a440ba7
+		
+This node has joined the cluster:
+* Certificate signing request was sent to apiserver and a response was received.
+* The Kubelet was informed of the new secure connection details.
+
+Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
+		
+		
+Go to the master configuration : Please check nodes.
