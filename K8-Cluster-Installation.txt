@@ -112,7 +112,7 @@ net.ipv4.ip_forward = 1
 
 sudo apt install -y apt-transport-https curl
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
-sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-focal main"
 sudo apt update
 sudo apt install -y kubelet kubeadm kubectl
 
@@ -123,6 +123,13 @@ when the kubernetes repository is available for Ubuntu 20.04 then replace xenial
 kubeadm join 157.230.82.111:6443 --token 7992c0.nwcf2fl6apzj65y1 \
         --discovery-token-ca-cert-hash sha256:86a55d4ed742035a340af9b782a32963099365c95965f9110983de515a440ba7
 		
+If we get any error here :
+sed -i "s/cgroupDriver: systemd/cgroupDriver: cgroupfs/g" /var/lib/kubelet/config.yaml
+systemctl daemon-reload
+systemctl restart kubelet
+
+
+kubeadm join 192.81.219.163:6443 --token quo3qu.s1frgsy5wbpnz5h1 --discovery-token-ca-cert-hash sha256:b926bb103d21afa623a3fe4cf5fc42d22630549024ce07a41d771bed16af879e --ignore-preflight-errors=all		
 This node has joined the cluster:
 * Certificate signing request was sent to apiserver and a response was received.
 * The Kubelet was informed of the new secure connection details.
